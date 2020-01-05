@@ -9,19 +9,19 @@ class Game {
         }
     }
 
-    verifyWin = player => {
+    verifyWin(player) {
         const { squares } = this.state
-        const possibilities = {
-            "0,1,2": 1,
-            "0,3,6": 2,
-            "0,4,8": 3,
-            "1,4,7": 4,
-            "2,5,8": 5,
-            "2,4,6": 6,
-            "3,4,5": 7,
-            "6,7,8": 8
-        }
-        const getIndex = player => {
+        const possibilities = [
+            "0,1,2",
+            "0,3,6",
+            "0,4,8",
+            "1,4,7",
+            "2,5,8",
+            "2,4,6",
+            "3,4,5",
+            "6,7,8"
+        ]
+        function getIndex(player) {
             return squares.reduce(function (a, e, i) {
                 if (e === player) {
                     a.push(i);
@@ -29,16 +29,28 @@ class Game {
                 return a;
             }, [])
         }
-        const playerToWin = getIndex(player).toString()
+        function winnerCheck(playerToWin, possibilityWinner = null) {
+            const haveWinner = possibilities.some(possibility => {
+                const [possibility1, possibility2, possibility3] = possibility.split(",")
+                if (playerToWin.includes(possibility1) && playerToWin.includes(possibility2) && playerToWin.includes(possibility3) && playerToWin.length >= 3) {
+                    possibilityWinner = possibility
+                    return true
+                }
+            })
 
-        if (!squares.includes('')) {
-            return "V"
+            return {
+                haveWinner,
+                possibilityWinner
+            }
         }
 
-        return possibilities[playerToWin] ? { player, possibility: possibilities[playerToWin] } : null
+        const playerToWin = getIndex(player).toString()
+        const { haveWinner, possibilityWinner } = winnerCheck(playerToWin.split(","))
+
+        return haveWinner ? { player, possibilityWinner } : !squares.includes('') ? "V" : null
     }
 
-    finish = winner => {
+    finish(winner) {
         if (!winner) {
             return
         } else if (winner === "V") {
@@ -50,7 +62,7 @@ class Game {
         this.reset()
     }
 
-    mark = (index, mark) => {
+    mark(index, mark) {
         const { players } = this.state
 
         if (this.state.squares[index]) {
@@ -63,15 +75,16 @@ class Game {
         })
 
         const winner = this.verifyWin(mark)
+
         this.finish(winner)
     }
 
-    setState = state => {
+    setState(state) {
         this.state = { ...this.state, ...state }
         this.update()
     }
 
-    reset = () => {
+    reset() {
         this.state = {
             squares: ['', '', '', '', '', '', '', '', ''],
             players: ['X', 'O'],
@@ -82,11 +95,11 @@ class Game {
         this.init()
     }
 
-    update = () => {
+    update() {
         this.element.innerHTML = this.render()
     }
 
-    init = () => {
+    init() {
         const { players } = this.state
         const currentPlayer = players[Math.floor(Math.random() * players.length)]
 

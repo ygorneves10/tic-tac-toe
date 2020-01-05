@@ -1,8 +1,13 @@
+@import url('https://fonts.googleapis.com/css?family=Indie+Flower&display=swap');
+
 #tic-tac-toe {
     display: flex;
     flex-wrap: wrap;
     width: 300px;
     border: solid 2px black;
+    font-family: 'Indie Flower', cursive;
+    font-weight: bold;
+    font-size: 2rem;
 }
 
 .square {

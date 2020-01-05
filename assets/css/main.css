@@ -1,0 +1,18 @@
+#tic-tac-toe {
+    display: flex;
+    flex-wrap: wrap;
+    width: 300px;
+    border: solid 2px black;
+}
+
+.square {
+    width: 100px;
+    height: 100px;
+    box-sizing: border-box;
+    border: solid 2px black;
+    display: flex;
+}
+
+.square span {
+    margin: auto;
+}

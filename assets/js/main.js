@@ -4,6 +4,8 @@ class Game {
         this.state = {
             squares: ['', '', '', '', '', '', '', '', ''],
             players: ['X', 'O'],
+            userPlayer: null,
+            robot: null,
             currentPlayer: null,
             winner: null
         }
@@ -51,32 +53,62 @@ class Game {
     }
 
     finish(winner) {
+        const { userPlayer, robot } = this.state
         if (!winner) {
             return
         } else if (winner === "V") {
             alert("Draw")
         } else if (winner.player) {
-            alert("WINNER - " + winner.player)
+            if (userPlayer === winner.player) {
+                alert("You win!")
+            } else if (robot === winner.player) {
+                alert("Robot win!")
+            }
         }
 
         this.reset()
     }
 
-    mark(index, mark) {
-        const { players } = this.state
+    robotPlay() {
+        const { robot, squares } = this.state
+        const indexes = []
+        squares.filter((square, index) => {
+            if (!square || square === '') {
+                indexes.push(index)
+                return
+            }
+        })
+        const index = indexes[Math.floor(Math.random() * indexes.length)]
 
-        if (this.state.squares[index]) {
+        setTimeout(() => {
+            this.mark(index, robot)
+        }, 1000);
+    }
+
+    mark(index, mark) {
+        const { userPlayer, robot, currentPlayer } = this.state
+
+        if (this.state.squares[index] || currentPlayer && currentPlayer != mark) {
             return
         }
 
+        const nextPlayer = userPlayer === mark ? robot : userPlayer
+
         this.state.squares[index] = mark
         this.setState({
-            currentPlayer: mark === players[0] ? players[1] : players[0]
+            currentPlayer: nextPlayer
         })
 
         const winner = this.verifyWin(mark)
 
-        this.finish(winner)
+        if (winner) {
+            this.finish(winner)
+            return
+        }
+
+        if (nextPlayer === robot) {
+            this.robotPlay()
+        }
     }
 
     setState(state) {
@@ -88,6 +120,8 @@ class Game {
         this.state = {
             squares: ['', '', '', '', '', '', '', '', ''],
             players: ['X', 'O'],
+            userPlayer: null,
+            robot: null,
             currentPlayer: null,
             winner: null
         }
@@ -101,21 +135,23 @@ class Game {
 
     init() {
         const { players } = this.state
-        const currentPlayer = players[Math.floor(Math.random() * players.length)]
+        const userPlayer = players[Math.floor(Math.random() * players.length)]
+        const robot = userPlayer === players[0] ? players[1] : players[0]
 
         this.setState({
-            currentPlayer
+            userPlayer,
+            robot
         })
     }
 
     render() {
-        const { squares, currentPlayer } = this.state
+        const { squares, userPlayer } = this.state
 
         return `
             ${
             squares.map((square, index) => {
                 return `
-                    <div class="square" onclick="tictactoe.mark(${index}, '${currentPlayer}')"><span>${square}</span></div>
+                    <div class="square" onclick="tictactoe.mark(${index}, '${userPlayer}')"><span>${square}</span></div>
                 `
             }).join('')
             }
